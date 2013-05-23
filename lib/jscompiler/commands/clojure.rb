@@ -26,17 +26,22 @@ module Jscompiler
   
     class Clojure < Base
 
-      def run
-        generate_debug_version(group)
+      def compiler_path
+        File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/clojure/compiler.jar"))
+      end
 
-        args = [
-          ["--js", Jscompiler::Config.files(group).join(' ')],
-          ["--js_output_file", Jscompiler::Config.output_destination(group)],
+      def args 
+        [
+          ["--js", temp_file_path],
+          ["--js_output_file", output_file_path],
           ["--warning_level", Jscompiler::Config.compiler["warning_level"] || "DEFAULT"] 
         ]
+      end
 
-        compiler_path = File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/clojure/compiler.jar"))
+      def run
+        generate_temp_file
         execute(prepare_command("java -jar #{compiler_path}", args))
+        save_or_delete_temp_file
       end
 
     end

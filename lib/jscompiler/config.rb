@@ -41,6 +41,16 @@ module Jscompiler
       @config ||= YAML::load(File.open(path)) 
     end
 
+    def self.update_config
+      File.open(path, 'w') do |file| 
+        file.write(config.to_yaml)
+      end
+    end
+
+    def self.configured?
+      File.exists?(path)
+    end
+
     def self.groups
       config["groups"]
     end
@@ -50,8 +60,10 @@ module Jscompiler
       groups[group]["compiler"] || config["compiler"]
     end
 
-    def self.compiler_command(group=nil)
-      case compiler(group)["name"]
+    def self.compiler_command(group=nil, opts = {})
+      cmplr = opts[:compiler] || compiler(group)["name"]
+
+      case cmplr
       when 'clojure'
         Jscompiler::Commands::Clojure
       when 'yahoo'
@@ -66,7 +78,7 @@ module Jscompiler
     end
 
     def self.files(group)
-      groups[group]["files"].split(" ")
+      groups[group]["files"]
     end
 
     def self.output(group)
@@ -77,16 +89,21 @@ module Jscompiler
       output(group)["path"]
     end
 
-    def self.output_name(group)
-      output(group)["name"]
-    end
-
     def self.debug?(group)
       output(group)["debug"]
     end
 
-    def self.output_destination(group, suffix = "")
-      "#{Jscompiler::Config.output_path(group)}/#{Jscompiler::Config.output_name(group)}#{suffix}.js"
+    def self.output_destination(group, opts = {})
+      path = output_path(group)
+      parts = path.split("/")
+      file_name = parts.pop
+      if opts[:suffix]
+        file_name = file_name.index('.js') ? file_name.gsub(".js", "#{opts[:suffix]}.js") : "#{file_name}#{opts[:suffix]}"
+      end
+      if opts[:prefix]
+        file_name = "#{opts[:prefix]}#{file_name}"
+      end
+      "#{parts.join("/")}/#{file_name}"
     end
 
   end

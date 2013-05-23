@@ -1,30 +1,25 @@
-source_root:            src                 
+---
+source_root: src
 compiler:
-  name:                 clojure             
-  warning_level:        QUIET
-groups:                                     
+  name: clojure
+  warning_level: QUIET
+groups:
   tables:
-    files:                                 
-      src/jquery-1.9.1.js
-      src/jquery.dataTables.js 
+    files:
+    - src/jquery-1.9.1.js
+    - src/jquery.dataTables.js
     output:
-      name:              jq.datatables.min  
-      debug:             false              
-      path:              build             
+      path: build/jq.datatables.min.js
   gridster:
-    files:                                 
-      src/jquery-1.9.1.js
-      src/jquery.gridster.js 
+    files:
+    - src/jquery-1.9.1.js
+    - src/jquery.gridster.js
     output:
-      name:              jq.gridster.min
-      debug:             false          
-      path:              build          
+      path: build/jq.gridster.min.js
   all:
-    files:               
-      src/jquery-1.9.1.js
-      src/jquery.gridster.js 
-      src/jquery.dataTables.js 
+    files:
+    - src/jquery-1.9.1.js
+    - src/jquery.gridster.js
+    - src/jquery.dataTables.js
     output:
-      name:              jq.all.min
-      debug:             false          
-      path:              build 
+      path: build/jq.all.min.js

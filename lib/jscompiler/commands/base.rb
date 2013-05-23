@@ -56,17 +56,36 @@ module Jscompiler
         "#{cmd} #{prepare_arguments(args)}"
       end
 
-      def generate_debug_version(group)
+      def save_or_delete_temp_file
         if Jscompiler::Config.debug?(group)
-          File.open(Jscompiler::Config.output_destination(group, "-debug"), 'w') do |file| 
-            Jscompiler::Config.files(group).each do |fl|
-              puts("Processing #{fl}...")
-              content = File.read(fl)
-              content = sanitize(content)
-              file.write(content)
-            end
+          FileUtils.mv(temp_file_path, debug_file_path)
+        else
+          FileUtils.rm(temp_file_path)
+        end
+      end
+
+      def temp_file_path
+        Jscompiler::Config.output_destination(group, :suffix => ".tmp")
+      end
+
+      def debug_file_path
+        Jscompiler::Config.output_destination(group, :suffix => ".debug")
+      end
+
+      def generate_temp_file
+        File.open(temp_file_path, 'w') do |file| 
+          Jscompiler::Config.files(group).each do |fl|
+            puts("Processing #{fl}...")
+            content = File.read(fl)
+            content = sanitize(content)
+            file.write(content)
           end
         end
+      end
+
+      def output_file_path
+        return options["output"] if options["output"]
+        Jscompiler::Config.output_destination(group, options)
       end
 
       def execute(cmd, opts = {})
@@ -82,7 +101,19 @@ module Jscompiler
           puts("Build failed.")
           exit 1
         end      
-      end    
+      end   
+
+      def self.compile_group(group, opts = {})
+        puts("\r\nCompiling #{group} group...")
+        
+        t0 = Time.now
+        Jscompiler::Config.compiler_command(group, opts).new(opts.merge({
+          :group => group
+        })).run
+        t1 = Time.now
+
+        puts("Done. Compilation took #{t1-t0} seconds\r\n")
+      end      
 
     end
 

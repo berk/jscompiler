@@ -26,15 +26,20 @@ module Jscompiler
   
     class Yahoo < Base
 
-      def run
-        generate_debug_version(group)
+      def compiler_path
+        File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/yahoo/yuicompressor-2.4.2.jar"))
+      end
 
-        args = [
-          ["-o", Jscompiler::Config.output_destination(group)],
+      def args 
+        [
+          ["-o", output_file_path],
         ]
+      end
 
-        compiler_path = File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/yahoo/yuicompressor-2.4.2.jar"))
-        execute("java -jar #{compiler_path} #{prepare_arguments(args)} #{Jscompiler::Config.files(group).join(' ')}")
+      def run
+        generate_temp_file
+        execute("java -jar #{compiler_path} #{prepare_arguments(args)} #{temp_file_path}")
+        save_or_delete_temp_file
       end
 
     end

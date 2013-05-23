@@ -39,17 +39,137 @@ module Jscompiler
     def init
       say("Initializing your project...")
 
-      # say("Which compiler would you like to use?")
-      # comps = [
-      #   ["1:", "clojure"],
-      # ]
-      # print_table(comps)
-      # num = ask_for_number(1)
-      # @compiler = comps[num-1].last
-      @compiler = 'clojure'  # the only one for now
+      ask_for_compiler
 
       @root = ask("\r\nWhat is your files source folder (a relative path from the current directory)?")
+      @root = '.' if @root == ''
+
+      ask_for_file_order
+      ask_for_output_path
+
+      template 'templates/jscompiler.yml.erb', "./#{Jscompiler::Config.path}"
+
+      say("Configuration has been saved in .jscompiler file. You now can run the compile commands.")      
+    end
+
+    map 'g' => :group
+    desc 'group', 'Creates a new file group'
+    def group
+      unless Jscompiler::Config.configured?
+        say("This folder has not yet been configured to run jsc commands. Please run 'jsc init'.")
+        return
+      end
+
+      @group_name = ask("What would you like to name this group?")
+      @root = Jscompiler::Config.source_root
+      ask_for_compiler(:default => true)
+      ask_for_file_order
+      ask_for_output_path
+
+      Jscompiler::Config.config['groups'][@group_name] = {
+        "files" => @files,
+        "output" => {"path" => @output}, 
+      }
+
+      if @compiler != "default"
+        Jscompiler::Config.config['groups'][@group_name]["compiler"] = {"name" => @compiler}
+      end
+
+      Jscompiler::Config.update_config
+
+      say("Configuration has been saved in .jscompiler file. You now can run the compile commands.")
+    end
+
+    map 'c' => :compile
+    desc 'compile', 'Compiles selected file group'
+    method_option :compiler, :type => :string, :aliases => "-c", :required => false, :banner => "Compiler to use for compilation", :default => nil
+    method_option :group, :type => :string, :aliases => "-g", :required => false, :banner => "Group to compile", :default => nil
+    method_option :output, :type => :string, :aliases => "-o", :required => false, :banner => "Path and name of the output file", :default => nil
+    method_option :prefix, :type => :string, :aliases => "-p", :required => false, :banner => "Prepand prefix to all compiled file names", :default => nil
+    method_option :suffix, :type => :string, :aliases => "-s", :required => false, :banner => "Append suffix to all compiled file names", :default => nil
+    def compile
+      unless Jscompiler::Config.configured?
+        say("This folder has not yet been configured to run jsc commands. Please run 'jsc init'.")
+        return
+      end
+
+      if @options[:group]
+        unless Jscompiler::Config.groups.keys.include?(@options[:group])
+          puts("Error: invalid group name")
+          return
+        end
+
+        Jscompiler::Commands::Base.compile_group(@options[:group], @options)
+        return
+      end
+
+      Jscompiler::Config.groups.keys.each do |group|  
+        Jscompiler::Commands::Base.compile_group(group, @options)
+      end
+    end
+
+    map 'w' => :watch
+    desc 'watch', 'Watches source root folder for cahnges and compiles all affected groups'
+    def watch
+      unless Jscompiler::Config.configured?
+        say("This folder has not yet been configured to run jsc commands. Please run 'jsc init'.")
+        return
+      end
+
+      say("Started monitoring #{Jscompiler::Config.source_root} folder. To stop use Ctrl+C.")
+
+      monitor = FSSM::Monitor.new
+      monitor.path("./#{Jscompiler::Config.source_root}/", '**/*.js') do
+        update do |base, relative|
+          puts("#{relative} file changed")
+          compile(relative)
+        end
+
+        delete do |base, relative|
+          puts("#{relative} deleted")
+          compile(relative)
+        end
+
+        def compile(relative)
+          Jscompiler::Config.groups.keys.each do |group|  
+            full_path = Jscompiler::Config.source_root == '.' ? relative : "#{Jscompiler::Config.source_root}/#{relative}"
+            next unless Jscompiler::Config.files(group).include?(full_path)
+            Jscompiler::Commands::Base.compile_group(group)
+          end
+        end        
+      end
+
+      monitor.run
+    end
+
+  private
+
+    def ask_for_compiler(opts = {})
+      say("Which compiler would you like to use?")
+      compilers = ["clojure", "yahoo"]
+      if opts[:default]
+        compilers.unshift("default")
+      end
+      options = []
+      compilers.each_with_index do |c, index|
+        options << ["#{index + 1}:", c]
+      end
+      print_table(options)
+      num = ask_for_number(compilers.size)
+      @compiler = compilers[num-1]
+    end
+
+    def ask_for_output_path(opts = {})
+      @output = ask("\r\nWhat is the path of the output file (a relative path from the current folder)?")
+      @output = './compiled.js' if @output == ''
+      if @output.index('/')
+        FileUtils.mkdir_p(@output.split('/')[0..-2].join('/'))  
+      end
+    end
+
+    def ask_for_file_order(opts = {})
       @files = Dir.glob("#{@root}/**/*.js")
+
       table = []
       @files.each_with_index do |fl, index|
         table << ["#{index + 1}: ", fl]
@@ -75,81 +195,8 @@ module Jscompiler
           table << ["#{index + 1}: ", fl]
         end
         print_table(table)
-      end
-
-      @filename = ask("\r\nWhat should the compiled file be named?")
-
-      @output = ask("\r\nWhere should the compiled file be saved (a relative path from this folder)?")
-
-      @debug = yes?("\r\nWould you like to create a debug version of the file (concatinated, but not compiled)?")
-
-      template 'templates/jscompiler.yml.erb', "./#{Jscompiler::Config.path}"
-      FileUtils.mkdir_p(@output)
-
-      say("Configuration has been saved. You now can run the compile command.")      
+      end      
     end
-
-    map 'c' => :compile
-    desc 'compile', 'Compiles selected file group'
-    method_option :group, :type => :string, :aliases => "-g", :required => false, :banner => "Group to compile", :default => nil
-    def compile
-      if @options[:group]
-        unless Jscompiler::Config.groups.keys.include?(@options[:group])
-          puts("Error: invalid group name")
-          return
-        end
-
-        Jscompiler::Cli.compile_group(@options[:group])
-        return
-      end
-
-      Jscompiler::Config.groups.keys.each do |group|  
-        Jscompiler::Cli.compile_group(group)
-      end
-    end
-
-    map 'w' => :watch
-    desc 'watch', 'Watches source root folder for cahnges and compiles all affected groups'
-    def watch
-      say("Started monitoring #{Jscompiler::Config.source_root} folder. To stop use Ctrl+C.")
-
-      monitor = FSSM::Monitor.new
-      monitor.path("./#{Jscompiler::Config.source_root}/", '**/*.js') do
-        update do |base, relative|
-          puts("#{relative} file changed")
-          compile(relative)
-        end
-
-        delete do |base, relative|
-          puts("#{relative} deleted")
-          compile(relative)
-        end
-
-        def compile(relative)
-          Jscompiler::Config.groups.keys.each do |group|  
-            full_path = Jscompiler::Config.source_root == '.' ? relative : "#{Jscompiler::Config.source_root}/#{relative}"
-            next unless Jscompiler::Config.files(group).include?(full_path)
-            Jscompiler::Cli.compile_group(group)
-          end
-        end        
-      end
-
-      monitor.run
-    end
-
-    def self.compile_group(group)
-      puts("Compiling #{group} group...")
-      
-      t0 = Time.now
-      Jscompiler::Config.compiler_command(group).new({
-        :group => group
-      }).run
-      t1 = Time.now
-
-      puts("\r\nDone. Compilation took #{t1-t0} seconds\r\n")
-    end
-
-  private
 
     def ask_for_number(max, opts = {})
       opts[:message] ||= "Choose: "
