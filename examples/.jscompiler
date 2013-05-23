@@ -1,7 +1,7 @@
 ---
 source_root: src
 compiler:
-  name: clojure
+  name: closure
   warning_level: QUIET
 groups:
   tables:

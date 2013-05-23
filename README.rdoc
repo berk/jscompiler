@@ -22,7 +22,7 @@ This command will ask you a few questions about your project. If you don't like 
 
   source_root:             "src"                    # Relative path from the project root to Where your JavaScript files are located
   compiler:
-    name:                  "clojure"                # Name of the compiler to use. By default "clojure" compiler will be used 
+    name:                  "closure"                # Name of the compiler to use. By default "closure" compiler will be used 
   groups:                                           # Groups of files you wish to compile 
     default:
       files:                                        # List of the JS files in the order they will be compiled

@@ -29,8 +29,9 @@ Signal.trap(:INT) { abort "\nAborting jscompiler task." }
 [ 'cli.rb', 
   'config.rb', 
   'commands/base.rb',
-  'commands/clojure.rb',
+  'commands/closure.rb',
   'commands/yahoo.rb',
+  'commands/uglifier.rb',
 ].each do |f|
   require File.expand_path(File.join(File.dirname(__FILE__), "../lib/jscompiler/#{f}"))
 end

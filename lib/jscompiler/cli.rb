@@ -146,7 +146,7 @@ module Jscompiler
 
     def ask_for_compiler(opts = {})
       say("Which compiler would you like to use?")
-      compilers = ["clojure", "yahoo"]
+      compilers = ["closure", "yahoo", "uglifier"]
       if opts[:default]
         compilers.unshift("default")
       end

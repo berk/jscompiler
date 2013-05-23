@@ -25,6 +25,6 @@ module Jscompiler
   autoload :Cli,      'jscompiler/cli'
   autoload :Config,   'jscompiler/config'
   autoload :Base,     'jscompiler/commands/base'
-  autoload :Clojure,  'jscompiler/commands/clojure'
+  autoload :Closure,  'jscompiler/commands/closure'
   autoload :Yahoo,    'jscompiler/commands/yahoo'
 end

@@ -64,10 +64,12 @@ module Jscompiler
       cmplr = opts[:compiler] || compiler(group)["name"]
 
       case cmplr
-      when 'clojure'
-        Jscompiler::Commands::Clojure
+      when 'closure'
+        Jscompiler::Commands::Closure
       when 'yahoo'
         Jscompiler::Commands::Yahoo
+      when 'uglifier'
+        Jscompiler::Commands::Uglifier
       else
         raise("Unsupported compiler")
       end

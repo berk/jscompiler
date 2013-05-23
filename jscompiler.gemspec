@@ -19,6 +19,8 @@ Gem::Specification.new do |spec|
   spec.test_files   = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_path = ['lib', 'lib/jscompiler']
 
-  spec.add_runtime_dependency 'thor', '~> 0.16.0'
+  spec.add_dependency 'thor', '~> 0.16.0'
+  spec.add_dependency "json", '~> 1.7.7'
   spec.add_dependency "fssm"
+  spec.add_dependency "uglifier"
 end
