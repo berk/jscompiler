@@ -39,15 +39,16 @@ module Jscompiler
     def init
       say("Initializing your project...")
 
-      say("Which compiler would you like to use?")
-      comps = [
-        ["1:", "clojure"],
-      ]
-      print_table(comps)
-      num = ask_for_number(1)
-      @compiler = comps[num-1].last
+      # say("Which compiler would you like to use?")
+      # comps = [
+      #   ["1:", "clojure"],
+      # ]
+      # print_table(comps)
+      # num = ask_for_number(1)
+      # @compiler = comps[num-1].last
+      @compiler = 'clojure'  # the only one for now
 
-      @root = ask("What is the root directory where your files are located?")
+      @root = ask("\r\nWhat is your files source folder (a relative path from the current directory)?")
       @files = Dir.glob("#{@root}/**/*.js")
       table = []
       @files.each_with_index do |fl, index|
@@ -55,18 +56,37 @@ module Jscompiler
       end
       print_table(table)
 
-      say("The files will be compiled in this order. You can change the order manually by modifying the .jscompiler file in this folder.")
+      say("\r\nEnter the file numbers in the order you want them to be compiled (separated with commas). For example: 2,4,1,3. If the order doesn't matter, just press enter.")
+      nums = ask("File order: ")
+      if nums.strip != ""
+        files = []
+        nums.split(",").each do |num|
+          index = num.to_i - 1
+          if index < 0 or index >= @files.size 
+            puts("Invalid file number: #{num}")
+            next
+          end
+          files << @files[index]
+        end
+        @files = files
+        say("The files will be compiled in the following order. You can change the order manually by modifying the .jscompiler file in this folder.")
+        table = []
+        @files.each_with_index do |fl, index|
+          table << ["#{index + 1}: ", fl]
+        end
+        print_table(table)
+      end
 
-      @filename = ask("What should we name the compiled file?")
+      @filename = ask("\r\nWhat should the compiled file be named?")
 
-      @output = ask("Where should the compiled file go?")
+      @output = ask("\r\nWhere should the compiled file be saved (a relative path from this folder)?")
 
-      @debug = yes("Whould you like to create a debug version of the file (concatinated, but not compiled)?")
+      @debug = yes?("\r\nWould you like to create a debug version of the file (concatinated, but not compiled)?")
 
       template 'templates/jscompiler.yml.erb', "./#{Jscompiler::Config.path}"
       FileUtils.mkdir_p(@output)
 
-      say("Please review the order of the files in the .jscompiler config and then run the compile command")      
+      say("Configuration has been saved. You now can run the compile command.")      
     end
 
     map 'c' => :compile

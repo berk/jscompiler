@@ -1,0 +1,30 @@
+source_root:            src                 # Relative path from the project root to Where your JavaScript files are located
+compiler:
+  name:                 clojure             # Name of the compiler to use. By default "clojure" compiler will be used 
+  warning_level:        QUIET
+groups:                                     # Groups of files you wish to compile 
+  tables:
+    files:                                  # List of the JS files in the order they will be compiled
+      src/jquery-1.9.1.js
+      src/jquery.dataTables.js 
+    output:
+      name:              jq.datatables.min  # Name of the output file   
+      debug:             false              # Wether you want to produce an uncompiled version as well 
+      path:              build              # Relative path to where the output files should be created
+  gridster:
+    files:                                  # List of the JS files in the order they will be compiled
+      src/jquery-1.9.1.js
+      src/jquery.gridster.js 
+    output:
+      name:              jq.gridster.min
+      debug:             false          
+      path:              build          
+  all:
+    files:               
+      src/jquery-1.9.1.js
+      src/jquery.gridster.js 
+      src/jquery.dataTables.js 
+    output:
+      name:              jq.all.min
+      debug:             false          
+      path:              build                

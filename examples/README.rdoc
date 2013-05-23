@@ -1,0 +1,4 @@
+= Examples
+
+This folder contains a few examples and a setting file that shows you how the files are compiled.
+

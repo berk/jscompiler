@@ -40,7 +40,8 @@ module Jscompiler
 
         args = [
           ["--js", Jscompiler::Config.files(group).join(' ')],
-          ["--js_output_file",Jscompiler::Config.output_destination(group)],
+          ["--js_output_file", Jscompiler::Config.output_destination(group)],
+          ["--warning_level", Jscompiler::Config.compiler["warning_level"] || "DEFAULT"] 
         ]
 
         compiler_path = File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/clojure/compiler.jar"))
