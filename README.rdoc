@@ -20,23 +20,23 @@ To setup your project with some default parameters, run the following command:
 
 This command will ask you a few questions about your project. If you don't like being asked questions and prefer to configure your project manually, just create a .jscompiler file in your project folder and provide the following information:
 
-  source_root:             "src"                    # Relative path from the project root to Where your JavaScript files are located
+  source_root:             "src"                    # Relative path to your Javascript folder
   compiler:
-    name:                  "clojure"                # Name of the compiler to use. By default "clojure" compiler will be used 
+    name:                  "clojure"                # Name of the compiler to use. Default is "clojure"
   groups:                                           # Groups of files you wish to compile 
     default:
-      files:                                        # List of the JS files in the order they will be compiled
-        src/file1.js  
-        src/file2.js  
-        src/file3.js  
+      files:                                        # List of JS files in the order they will be compiled
+      -  src/file1.js  
+      -  src/file2.js  
+      -  src/file3.js  
       output:
-        path:              "build/default.min.js"   # Relative path to where the output files should be created
+        path:              "build/default.min.js"   # Relative path to the output file
     just1and3:
-      compiler:                                     # You can even specify different compilers for different groups
+      compiler:                                     # You can specify different compiler for each group
         name:              "yahoo" 
       files:                               
-        src/file1.js  
-        src/file3.js  
+      -  src/file1.js  
+      -  src/file3.js  
       output:
         path:              "build/just1and3.min.js"            
 
