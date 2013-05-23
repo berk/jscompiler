@@ -26,17 +26,17 @@ This command will ask you a few questions about your project. If you don't like 
   groups:                                           # Groups of files you wish to compile 
     default:
       files:                                        # List of the JS files in the order they will be compiled
-        src/file1.js  
-        src/file2.js  
-        src/file3.js  
+      -  src/file1.js  
+      -  src/file2.js  
+      -  src/file3.js  
       output:
         path:              "build/default.min.js"   # Relative path to where the output files should be created
     just1and3:
       compiler:                                     # You can even specify different compilers for different groups
         name:              "yahoo" 
       files:                               
-        src/file1.js  
-        src/file3.js  
+      -  src/file1.js  
+      -  src/file3.js  
       output:
         path:              "build/just1and3.min.js"            
 
