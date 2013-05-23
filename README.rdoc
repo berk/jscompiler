@@ -20,27 +20,25 @@ To setup your project with some default parameters, run the following command:
 
 This command will ask you a few questions about your project. If you don't like being asked questions and prefer to configure your project manually, just create a .jscompiler file in your project folder and provide the following information:
 
-  source_root:             "src"            # Relative path from the project root to Where your JavaScript files are located
+  source_root:             "src"                    # Relative path from the project root to Where your JavaScript files are located
   compiler:
-    name:                 "clojure"         # Name of the compiler to use. By default "clojure" compiler will be used 
-  groups:                                   # Groups of files you wish to compile 
+    name:                  "clojure"                # Name of the compiler to use. By default "clojure" compiler will be used 
+  groups:                                           # Groups of files you wish to compile 
     default:
-      files:                                # List of the JS files in the order they will be compiled
+      files:                                        # List of the JS files in the order they will be compiled
         src/file1.js  
         src/file2.js  
         src/file3.js  
       output:
-        name:              "default"         # Name of the output file   
-        debug:             true              # Wether you want to produce an uncompiled version as well 
-        path:              "build"           # Relative path to where the output files should be created
+        path:              "build/default.min.js"   # Relative path to where the output files should be created
     just1and3:
-      files:                                 # List of the JS files in the order they will be compiled
+      compiler:                                     # You can even specify different compilers for different groups
+        name:              "yahoo" 
+      files:                               
         src/file1.js  
         src/file3.js  
       output:
-        name:              "just1and3"        
-        debug:             true             
-        path:              "build"            
+        path:              "build/just1and3.min.js"            
 
 
 You can configure any number of groups. The files in the groups will be concatenated and compiled in the order you entered them in.
