@@ -127,7 +127,8 @@ module Jscompiler
 
         def compile(relative)
           Jscompiler::Config.groups.keys.each do |group|  
-            next unless Jscompiler::Config.files(group).include?("#{Jscompiler::Config.source_root}/#{relative}")
+            full_path = Jscompiler::Config.source_root == '.' ? relative : "#{Jscompiler::Config.source_root}/#{relative}"
+            next unless Jscompiler::Config.files(group).include?(full_path)
             Jscompiler::Cli.compile_group(group)
           end
         end        
@@ -140,7 +141,7 @@ module Jscompiler
       puts("Compiling #{group} group...")
       
       t0 = Time.now
-      Jscompiler::Config.compiler_command.new({
+      Jscompiler::Config.compiler_command(group).new({
         :group => group
       }).run
       t1 = Time.now

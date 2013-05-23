@@ -50,9 +50,12 @@ module Jscompiler
       groups[group]["compiler"] || config["compiler"]
     end
 
-    def self.compiler_command(group = nil)
-      if compiler(group)["name"] == 'clojure'
+    def self.compiler_command(group=nil)
+      case compiler(group)["name"]
+      when 'clojure'
         Jscompiler::Commands::Clojure
+      when 'yahoo'
+        Jscompiler::Commands::Yahoo
       else
         raise("Unsupported compiler")
       end
@@ -62,27 +65,27 @@ module Jscompiler
       config["source_root"]
     end
 
-    def self.files(group = "default")
+    def self.files(group)
       groups[group]["files"].split(" ")
     end
 
-    def self.output(group = "default")
+    def self.output(group)
       groups[group]["output"]
     end
 
-    def self.output_path(group = "default")
+    def self.output_path(group)
       output(group)["path"]
     end
 
-    def self.output_name(group = "default")
+    def self.output_name(group)
       output(group)["name"]
     end
 
-    def self.debug?(group = "default")
+    def self.debug?(group)
       output(group)["debug"]
     end
 
-    def self.output_destination(group = "default", suffix = "")
+    def self.output_destination(group, suffix = "")
       "#{Jscompiler::Config.output_path(group)}/#{Jscompiler::Config.output_name(group)}#{suffix}.js"
     end
 

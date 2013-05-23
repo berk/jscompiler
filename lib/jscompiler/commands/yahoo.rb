@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 #--
 # Copyright (c) 2013 Michael Berkovich
 #
@@ -23,17 +21,23 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-# Abort beautifully with ctrl+c.
-Signal.trap(:INT) { abort "\nAborting jscompiler task." }
+module Jscompiler
+  module Commands
+  
+    class Yahoo < Base
 
-[ 'cli.rb', 
-  'config.rb', 
-  'commands/base.rb',
-  'commands/clojure.rb',
-  'commands/yahoo.rb',
-].each do |f|
-  require File.expand_path(File.join(File.dirname(__FILE__), "../lib/jscompiler/#{f}"))
+      def run
+        generate_debug_version(group)
+
+        args = [
+          ["-o", Jscompiler::Config.output_destination(group)],
+        ]
+
+        compiler_path = File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/yahoo/yuicompressor-2.4.2.jar"))
+        execute("java -jar #{compiler_path} #{prepare_arguments(args)} #{Jscompiler::Config.files(group).join(' ')}")
+      end
+
+    end
+
+  end
 end
-
-# require 'jscompiler'
-Jscompiler::Cli.start

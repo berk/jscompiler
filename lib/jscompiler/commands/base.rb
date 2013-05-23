@@ -48,8 +48,25 @@ module Jscompiler
         content.gsub(comments_regexp, '')
       end
 
-      def prepare(cmd, args)
-        "#{cmd} #{args.collect{|arg| arg.join(' ')}.join(' ')};"
+      def prepare_arguments(args)
+        args.collect{|arg| arg.join(' ')}.join(' ')
+      end
+
+      def prepare_command(cmd, args)
+        "#{cmd} #{prepare_arguments(args)}"
+      end
+
+      def generate_debug_version(group)
+        if Jscompiler::Config.debug?(group)
+          File.open(Jscompiler::Config.output_destination(group, "-debug"), 'w') do |file| 
+            Jscompiler::Config.files(group).each do |fl|
+              puts("Processing #{fl}...")
+              content = File.read(fl)
+              content = sanitize(content)
+              file.write(content)
+            end
+          end
+        end
       end
 
       def execute(cmd, opts = {})

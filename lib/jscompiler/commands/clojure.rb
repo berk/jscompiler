@@ -27,16 +27,7 @@ module Jscompiler
     class Clojure < Base
 
       def run
-        if Jscompiler::Config.debug?(group)
-          File.open(Jscompiler::Config.output_destination(group, "-debug"), 'w') do |file| 
-            Jscompiler::Config.files(group).each do |fl|
-              pp "Processing #{fl}..."
-              content = File.read(fl)
-              content = sanitize(content)
-              file.write(content)
-            end
-          end
-        end
+        generate_debug_version(group)
 
         args = [
           ["--js", Jscompiler::Config.files(group).join(' ')],
@@ -45,7 +36,7 @@ module Jscompiler
         ]
 
         compiler_path = File.expand_path(File.join(File.dirname(__FILE__), "../../../vendor/clojure/compiler.jar"))
-        execute(prepare("java -jar #{compiler_path}", args))
+        execute(prepare_command("java -jar #{compiler_path}", args))
       end
 
     end
