@@ -1,0 +1,78 @@
+= Introduction
+
+There are many tools out there that help you obfuscate, compress, compile or uglify your JavaScript so the file size will be smaller, the script will load faster and the code will be harder to steal.
+
+This CLI utility simplifies the process of compiling your JS files by letting you choose your compression library and use it with a single command:
+
+  $ jsc compile 
+
+
+= Installation
+
+  gem install jscompiler
+
+
+= Configuration
+
+To setup your project with some default parameters, run the following command:
+
+  $ jsc init
+
+This command will ask you a few questions about your project. If you don't like being asked questions and prefer to configure your project manually, just create a .jscompiler file in your project folder and provide the following information:
+
+  source_root:             "src"            # Relative path from the project root to Where your JavaScript files are located
+  compiler:
+    name:                 "clojure"         # Name of the compiler to use. By default "clojure" compiler will be used 
+  groups:                                   # Groups of files you wish to compile 
+    default:
+      files:                                # List of the JS files in the order they will be compiled
+        src/file1.js  
+        src/file2.js  
+        src/file3.js  
+      output:
+        name:              "default"         # Name of the output file   
+        debug:             true              # Wether you want to produce an uncompiled version as well 
+        path:              "build"           # Relative path to where the output files should be created
+    just1and3:
+      files:                                 # List of the JS files in the order they will be compiled
+        src/file1.js  
+        src/file3.js  
+      output:
+        name:              "just1and3"        
+        debug:             true             
+        path:              "build"            
+
+
+You can configure any number of groups. The files in the groups will be concatenated and compiled in the order you entered them in.
+
+= Execution
+
+Once you have configured your file groups, you can run the compile command:
+
+   $ jsc c
+
+This will compile all groups. To compile only a specific group, provide the group name:
+
+   $ jsc c -g just1and3
+
+To get help on any of the tasks, run:
+
+   $ jsc
+
+
+= Watching folders for changes
+
+Many times you want the compilation to be done automatically when you change the JavaScript files. JSC provides this option as well.
+
+You can start watching the source_root folder for changes by running the following command:
+
+   $ jsc w
+
+Any time a JavaScript file is changed anywhere in the folder, the JSC will find all of the groups where the file is listed and compile these groups.
+
+
+= Contribution
+
+Clone the repository, make any changes you like and send me a pull request.
+
+

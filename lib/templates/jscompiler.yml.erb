@@ -1,0 +1,11 @@
+source_root:            <%=@root%>             # Relative path from the project root to Where your JavaScript files are located
+compiler:
+  name:                 <%=@compiler%>         # Name of the compiler to use. By default "clojure" compiler will be used 
+groups:                                        # Groups of files you wish to compile 
+  default:
+    files:                                     # List of the JS files in the order they will be compiled
+      <%= @files.join("\r\n      ") %> 
+    output:
+      name:              <%=@filename%>        # Name of the output file   
+      debug:             <%=@debug%>           # Wether you want to produce an uncompiled version as well 
+      path:              <%=@output%>          # Relative path to where the output files should be created
