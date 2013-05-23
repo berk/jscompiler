@@ -7,6 +7,29 @@ This CLI utility simplifies the process of compiling your JS files by letting yo
   $ jsc compile 
 
 
+= Supported Compilers/Compressors/Uglifiers
+
+  
+== Google Closure 
+
+https://developers.google.com/closure/
+
+The Closure Compiler compiles JavaScript into compact, high-performance code. The compiler removes dead code and rewrites and minimizes what's left so that it downloads and runs quickly. It also checks syntax, variable references, and types, and warns about common JavaScript pitfalls. These checks and optimizations help you write apps that are less buggy and easier to maintain.
+
+== YUI Compressor
+
+http://yui.github.io/yuicompressor/
+
+The YUI Compressor is written in Java (requires Java >= 1.4) and relies on Rhino to tokenize the source JavaScript file. It starts by analyzing the source JavaScript file to understand how it is structured. It then prints out the token stream, omitting as many white space characters as possible, and replacing all local symbols by a 1 (or 2, or 3) letter symbol wherever such a substitution is appropriate (in the face of evil features such as eval or with, the YUI Compressor takes a defensive approach by not obfuscating any of the scopes containing the evil statement).
+
+== Uglifier
+
+https://github.com/lautis/uglifier
+
+Ruby wrapper for UglifyJS JavaScript compressor.
+
+
+
 = Installation
 
   gem install jscompiler
